@@ -1,0 +1,8 @@
+client/node_modules/
+client/build/
+
+server/node_modules/
+server/dist/
+
+client/yarn.lock
+server/yarn.lock
