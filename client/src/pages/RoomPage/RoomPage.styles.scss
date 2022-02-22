@@ -1,0 +1,21 @@
+#room-page {
+  height: 100vh;
+  padding: 20px 50px;
+
+  #upload-section {
+    height: 15%;
+    margin: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: flex-start;
+  }
+
+  #uploads {
+    overflow: scroll;
+    padding: 20px 50px;
+    height: 65vh;
+    width: 100%;
+    background-color: #b0a8b9;
+  }
+}

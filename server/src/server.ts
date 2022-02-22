@@ -12,17 +12,25 @@ const io = new Server({
 io.on("connection", (socket) => {
   console.log(socket.id);
 
+  socket.on("joinRoom", (roomName) => {
+    socket.join([roomName]);
+  });
+
+  socket.on("leaveRoom", (roomName) => {
+    socket.leave(roomName);
+  });
+
   socket.on("fileTransfer", (data) => {
-    io.emit("fileTransfer", data);
+    io.in("ggxd").emit("fileTransfer", data);
   });
 
   socket.on("filePart", (data) => {
-    io.emit("filePart", data);
+    io.in("ggxd").emit("filePart", data);
     console.log(data.progressPercentage + "recieved");
   });
 
-  socket.on("fileRecieved", (data) => {
-    io.emit("filePart", data);
+  socket.on("fileSent", (data) => {
+    io.in("ggxd").emit("fileRecieved", data);
     console.log("File Recieved successfully");
   });
 });
