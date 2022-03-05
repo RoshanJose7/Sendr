@@ -1,6 +1,6 @@
 {
-  "name": "turborepo-basic-shared",
-  "version": "0.0.0",
+  "name": "sendr",
+  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -13,12 +13,13 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@types/node": "^16.7.13",
+    "typescript": "^4.5.5",
     "prettier": "^2.5.1",
     "turbo": "latest"
   },
   "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "packageManager": "yarn@1.22.17"
 }

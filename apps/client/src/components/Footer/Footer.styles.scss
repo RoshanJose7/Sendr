@@ -1,0 +1,9 @@
+footer {
+  height: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--white);
+  background: linear-gradient(to top, var(--blue) 80%, var(--white) 100%);
+}

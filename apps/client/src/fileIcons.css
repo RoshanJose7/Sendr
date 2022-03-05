@@ -1,0 +1,47 @@
+.fm_file {
+  background-image: url("./assets/filetypes/file.svg");
+}
+
+.ft_pdf {
+  background-image: url("./assets/filetypes/pdf.svg");
+}
+
+.ft_xls {
+  background-image: url("./assets/filetypes/xls.svg");
+}
+
+.ft_doc,
+.ft_docx {
+  background-image: url("./assets/filetypes/doc.svg");
+}
+
+.ft_exe,
+.ft_msi {
+  background-image: url("./assets/filetypes/exe.svg");
+}
+
+.ft_png,
+.ft_jpg,
+.ft_bmp,
+.ft_gif {
+  background-image: url("./assets/filetypes/image.svg");
+}
+
+.ft_txt,
+.ft_js,
+.ft_ini,
+.ft_bat,
+.ft_css {
+  background-image: url("./assets/filetypes/code.svg");
+}
+
+.ft_htm,
+.ft_xml,
+.ft_html {
+  background-image: url("./assets/filetypes/html.svg");
+}
+
+.ft_rar,
+.ft_zip {
+  background-image: url("./assets/filetypes/zip.svg");
+}
