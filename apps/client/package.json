@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development react-scripts start",
-    "build": "react-scripts build"
+    "start": "npx serve -s build",
+    "build": "react-scripts build",
+    "heroku-postbuild": "yarn build"
   },
   "dependencies": {
     "uuid": "^8.3.2",
