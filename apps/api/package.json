@@ -14,9 +14,6 @@
     "express": "^4.17.1",
     "socket.io": "^4.4.1"
   },
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "devDependencies": {
     "config": "workspace:*",
     "typescript": "workspace:*",
@@ -27,5 +24,8 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
     "tslib": "^2.3.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
