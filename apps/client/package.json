@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "NODE_ENV=development react-scripts start",
     "start": "npx serve -s build",
-    "build": "react-scripts build",
-    "heroku-postbuild": "yarn build"
+    "build": "react-scripts build"
   },
   "dependencies": {
     "uuid": "^8.3.2",
