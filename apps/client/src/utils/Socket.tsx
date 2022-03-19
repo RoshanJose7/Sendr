@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 
 const socketUrl =
   process.env.NODE_ENV !== "development"
-    ? "https://sendr-server.herokuapp.com/"
+    ? "https://api-sendr.vercel.app/"
     : "http://localhost:8000/";
 
 export const socket = io(socketUrl, {
