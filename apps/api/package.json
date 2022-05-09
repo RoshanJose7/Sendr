@@ -7,8 +7,7 @@
   "scripts": {
     "start": "npm run build && npx cross-env NODE_ENV=prod node build/server.js",
     "dev": "NODE_ENV=dev nodemon",
-    "build": "npx tsc && npx tsc-alias",
-    "heroku-postbuild": "yarn build"
+    "build": "npx tsc && npx tsc-alias"
   },
   "dependencies": {
     "express": "^4.17.1",
