@@ -50,13 +50,6 @@ io.on("connection", (socket) => {
     socket.to(data.senderid).emit("sentPercentage", data);
   });
 
-  socket.on("fileRecievedAck", (data) => {
-    socket.to(data.id).emit("fileSentAck", {
-      name: data.name,
-      fileName: data.fileName,
-    });
-  });
-
   socket.on("disconnect", () => {
     socket.removeAllListeners();
     socket.disconnect();

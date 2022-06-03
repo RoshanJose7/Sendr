@@ -118,23 +118,11 @@ function RoomPage() {
 
       dataURL = "";
       setProgress(0);
-
-      socket.emit("fileRecievedAck", {
-        id: socket.id,
-        name: userName,
-        fileName: data.fileName,
-        room: roomName,
-      });
     });
 
     socket.on("disconnect", () => {
       socket.removeAllListeners();
       socket.removeAllListeners("disconnect");
-    });
-
-    socket.on("fileSentAck", (data) => {
-      const notification = `${data.fileName} sent successfully`;
-      setHistory((prevNotifications) => [...prevNotifications, notification]);
     });
 
     socket.on("user_joined", (name) => {
