@@ -46,6 +46,10 @@ io.on("connection", (socket) => {
       .emit("recieverFileSent", { ...data, sender: data.sender });
   });
 
+  socket.on("recievedPercentage", (data) => {
+    socket.to(data.senderid).emit("sentPercentage", data);
+  });
+
   socket.on("fileRecievedAck", (data) => {
     socket.to(data.id).emit("fileSentAck", {
       name: data.name,

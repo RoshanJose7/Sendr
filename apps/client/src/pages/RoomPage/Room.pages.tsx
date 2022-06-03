@@ -1,23 +1,21 @@
 import { v4 as uuid } from "uuid";
-import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from "react";
 
-import { ReactComponent as BrowseSVG } from "../../assets/browse.svg";
-import { ReactComponent as ExitSVG } from "../../assets/exit.svg";
-import { ReactComponent as SendSVG } from "../../assets/send.svg";
-import { ReactComponent as SentSVG } from "../../assets/sent.svg";
-import { ReactComponent as DownloadSVG } from "../../assets/download.svg";
-
-import { SocketContext } from "../../utils/Socket";
-import { FileTransmitType, UploadStatus } from "../../utils/constants";
 import {
   chunkString,
   dataURLtoFile,
   fileToDataURL,
   formatBytes,
 } from "../../utils/Files";
-
 import "./Room.styles.scss";
+import { SocketContext } from "../../utils/Socket";
+import { ReactComponent as ExitSVG } from "../../assets/exit.svg";
+import { ReactComponent as SendSVG } from "../../assets/send.svg";
+import { ReactComponent as SentSVG } from "../../assets/sent.svg";
+import { ReactComponent as BrowseSVG } from "../../assets/browse.svg";
+import { FileTransmitType, UploadStatus } from "../../utils/constants";
+import { ReactComponent as DownloadSVG } from "../../assets/download.svg";
 
 function RoomPage() {
   const { roomName, userName } = useParams();
@@ -25,6 +23,7 @@ function RoomPage() {
   const navigate = useNavigate();
 
   const [progress, setProgress] = useState(0);
+  const [sendProgress, setSendProgress] = useState(0);
   const [history, setHistory] = useState<any[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -41,6 +40,27 @@ function RoomPage() {
     socket.emit("joinRoom", {
       room: roomName,
       name: userName,
+    });
+
+    socket.on("sentPercentage", (data) => {
+      setSendProgress(data.percentage);
+
+      if (data.percentage === 100) {
+        setHistory((prev) => {
+          const idx = prev.findIndex(
+            (f) => typeof f !== "string" && f.id === data.fileid
+          );
+
+          const oldFile = prev[idx];
+          prev.splice(idx, 1);
+          oldFile.status = UploadStatus.UPLOADED;
+          prev.push(oldFile);
+
+          return prev;
+        });
+
+        setSendProgress(0);
+      }
     });
 
     socket.on("recieverFileTransfer", (data) => {
@@ -64,10 +84,22 @@ function RoomPage() {
     socket.on("recieverFilePart", (data) => {
       setProgress(data.progressPercentage);
       dataURL += data.dataURL;
+
+      socket.emit("recievedPercentage", {
+        fileid: data.id,
+        senderid: data.senderid,
+        percentage: data.progressPercentage,
+      });
     });
 
     socket.on("recieverFileSent", (data) => {
       const resultFile = dataURLtoFile(dataURL, data.fileName);
+      socket.emit("recievedPercentage", {
+        fileid: data.id,
+        senderid: data.senderid,
+        percentage: 100,
+      });
+
       setProgress(100);
 
       setHistory((prev) => {
@@ -101,7 +133,7 @@ function RoomPage() {
     });
 
     socket.on("fileSentAck", (data) => {
-      const notification = `${data.name} recieved ${data.fileName} successfully`;
+      const notification = `${data.fileName} sent successfully`;
       setHistory((prevNotifications) => [...prevNotifications, notification]);
     });
 
@@ -128,27 +160,14 @@ function RoomPage() {
     if (files.length > 0) setSelectedFiles(files);
   }
 
-  function handleFile(dataURL: string, file: File) {
-    console.log(file);
+  function handleFile(dataURL: string, file: File, fileid: string) {
     if (!file) return;
 
-    setProgress(0);
-    const fileId = uuid();
+    setSendProgress(0);
     const fileDataURLArray = chunkString(dataURL, 209715);
 
-    const newFile: UploadedFile = {
-      id: fileId,
-      sender: userName!,
-      file: file,
-      size: file.size,
-      status: UploadStatus.UPLOADING,
-      type: FileTransmitType.SENT,
-    };
-
-    setHistory((prev) => [...prev, newFile]);
-
     socket?.emit("senderFileTransfer", {
-      id: fileId,
+      id: fileid,
       sender: userName,
       name: file.name,
       size: file.size,
@@ -162,10 +181,9 @@ function RoomPage() {
         (i / fileDataURLArray.length) * 100
       );
 
-      setProgress(progressPercentage);
-
       socket?.emit("senderFilePart", {
-        id: fileId,
+        id: fileid,
+        senderid: socket.id,
         sender: userName,
         name: file.name,
         size: file.size,
@@ -175,24 +193,12 @@ function RoomPage() {
         room: roomName,
       });
 
-      setHistory((prev) => {
-        const idx = prev.findIndex(
-          (f) => typeof f !== "string" && f.id === fileId
-        );
-
-        const oldFile = prev[idx];
-        prev.splice(idx, 1);
-        oldFile.status = UploadStatus.UPLOADED;
-        prev.push(oldFile);
-
-        return prev;
-      });
-
       i++;
     }
 
     socket?.emit("senderFileSent", {
-      id: fileId,
+      id: fileid,
+      senderid: socket.id,
       sender: userName,
       name: file.name,
       size: file.size,
@@ -201,20 +207,26 @@ function RoomPage() {
       room: roomName,
     });
 
-    setHistory((prevNotifications) => [
-      ...prevNotifications,
-      `${file?.name} sent successfully`,
-    ]);
     setSelectedFiles([]);
-    setProgress(100);
   }
 
   function handleSendFile() {
     if (selectedFiles.length === 0) return;
-    console.log(selectedFiles);
 
     for (let i = 0; i < selectedFiles.length; i++) {
-      fileToDataURL(selectedFiles[i], handleFile);
+      const fileid = uuid();
+
+      const newFile: UploadedFile = {
+        id: fileid,
+        sender: userName!,
+        file: selectedFiles[i],
+        size: selectedFiles[i].size,
+        status: UploadStatus.UPLOADING,
+        type: FileTransmitType.SENT,
+      };
+
+      setHistory((prev) => [...prev, newFile]);
+      fileToDataURL(fileid, selectedFiles[i], handleFile);
     }
   }
 
@@ -257,7 +269,7 @@ function RoomPage() {
                   {his.status === UploadStatus.UPLOADED ? (
                     <SentSVG />
                   ) : (
-                    <h5>{progress}%</h5>
+                    <h5>{sendProgress}%</h5>
                   )}
                 </div>
               </div>

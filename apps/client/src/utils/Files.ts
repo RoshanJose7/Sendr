@@ -1,11 +1,12 @@
 export function fileToDataURL(
+  fileid: string,
   file: File,
-  handleFile: { (dataURL: string, file: File): void }
+  handleFile: { (dataURL: string, file: File, fileid: string): void }
 ) {
   const reader = new FileReader();
   reader.readAsDataURL(file);
 
-  reader.onload = () => handleFile(reader.result as string, file);
+  reader.onload = () => handleFile(reader.result as string, file, fileid);
   reader.onerror = (e) => console.error(e);
 }
 
