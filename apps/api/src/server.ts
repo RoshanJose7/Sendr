@@ -3,13 +3,8 @@ import { Server } from "socket.io";
 const port: number = Number.parseInt(process.env.PORT!) || 8000;
 
 const io = new Server({
+  path: "/socket.io",
   transports: ["websocket"],
-  allowUpgrades: false,
-  serveClient: false,
-  cors: {
-    origin: ["http://localhost:3000", "https://sendr.vercel.app/"],
-    methods: ["GET", "POST"],
-  },
 });
 
 const usersInRoom = new Map<string, string[]>();
